@@ -72,7 +72,7 @@ export interface ResumenCommit {
 
 
 
-export interface GitHubIssue {
+export interface GitHubIssues {
     Id: number;
     Title: string;
     Estado: "Abierto" | "Cerrado";
@@ -116,7 +116,7 @@ export interface ResumenPullRequest {
     status: 'open' | 'closed' | 'merged' | 'draft';
     }
 
-export interface GitHubToolError {
+export interface GitHubToolError { 
   message: string;
   documentationUrl: string;
   code:
