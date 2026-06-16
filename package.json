@@ -9,22 +9,30 @@
   "devDependencies": {
     "@types/node": "^25.9.3",
     "tsx": "^4.22.4",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.9"
   },
   "name": "proyectom5-joaquingonzalezft73",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "start": "tsx src/index.ts",
+    "dev": "tsx src/server.ts",
+    "start": "tsx src/server.ts",
+    "test": "vitest",
     "smoke": "tsx src/scripts/smokeRepositorio.ts",
     "smoke:Usuario": "tsx src/scripts/smokeUsuario.ts",
     "smoke:Commit": "tsx src/scripts/smokeCommit.ts",
     "smoke:Issues": "tsx src/scripts/smokeIssues.ts",
     "smoke:PullRequests": "tsx src/scripts/smokePullRequests.ts",
-    "smoke:Error": "tsx src/scripts/smokeError.ts"
+    "smoke:Error": "tsx src/scripts/smokeError.ts",
+    "smoke:ListRepos": "tsx src/scripts/smokeListRepositories.ts",
+    "smoke:ListIssues": "tsx src/scripts/smokeListIssues.ts",
+    "smoke:ListCommits": "tsx src/scripts/smokeListCommits.ts",
+    "smoke:CreateRepo": "tsx src/scripts/smokeCreateRepository.ts",
+    "smoke:CreateIssue": "tsx src/scripts/smokeCreateIssue.ts",
+    "smoke:CreateCommit": "tsx src/scripts/smokeCreateCommit.ts"
   },
   "keywords": [],
   "author": "",
