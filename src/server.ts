@@ -6,6 +6,9 @@ import { listCommitsTool, listCommitsSchema } from "./tools/listCommits.js";
 import { createRepositoryTool, createRepositorySchema } from "./tools/createRepository.js";
 import { createIssueTool, createIssueSchema } from "./tools/createIssue.js";
 import { createCommitTool, createCommitSchema } from "./tools/createCommit.js";
+import { closeIssueTool, closeIssueSchema } from "./tools/closeIssue.js";
+import { createBranchTool, createBranchSchema } from "./tools/createBranch.js";
+import { createPullRequestTool, createPullRequestSchema } from "./tools/createPullRequest.js";
 
 const server = new McpServer({
   name: "Proyecto M5 - GitHub MCP Server",
@@ -68,6 +71,36 @@ server.tool(
   createCommitSchema.shape,
   async (input) => {
     const result = await createCommitTool(input);
+    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+  }
+);
+
+server.tool(
+  "close_issue",
+  "Cierra un issue existente en un repositorio de GitHub",
+  closeIssueSchema.shape,
+  async (input) => {
+    const result = await closeIssueTool(input);
+    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+  }
+);
+
+server.tool(
+  "create_branch",
+  "Crea una nueva branch en un repositorio de GitHub",
+  createBranchSchema.shape,
+  async (input) => {
+    const result = await createBranchTool(input);
+    return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+  }
+);
+
+server.tool(
+  "create_pull_request",
+  "Crea un pull request entre dos branches en un repositorio de GitHub",
+  createPullRequestSchema.shape,
+  async (input) => {
+    const result = await createPullRequestTool(input);
     return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
   }
 );
