@@ -32,7 +32,8 @@
     "smoke:ListCommits": "tsx src/scripts/smokeListCommits.ts",
     "smoke:CreateRepo": "tsx src/scripts/smokeCreateRepository.ts",
     "smoke:CreateIssue": "tsx src/scripts/smokeCreateIssue.ts",
-    "smoke:CreateCommit": "tsx src/scripts/smokeCreateCommit.ts"
+    "smoke:CreateCommit": "tsx src/scripts/smokeCreateCommit.ts",
+    "inspector": "npx @modelcontextprotocol/inspector tsx src/server.ts"
   },
   "keywords": [],
   "author": "",

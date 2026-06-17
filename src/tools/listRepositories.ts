@@ -5,9 +5,13 @@ import { obtenerRepositoriosUsuario } from "../GitHub/Operations.js";
 export const listRepositoriesSchema = z.object({
   username: z
     .string()
-    .min(1, "El nombre de usuario no puede estar vacío")
-    .max(39, "El nombre de usuario no puede superar 39 caracteres")
-    .regex(/^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?$/, "Nombre de usuario inválido"), 
+    .transform(val => val.trim())
+    .pipe(z
+      .string()
+      .min(1, "El nombre de usuario no puede estar vacío")
+      .max(39, "El nombre de usuario no puede superar 39 caracteres")
+      .regex(/^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?$/, "Nombre de usuario inválido")
+    ),
 });
 
 export type ListRepositoriesInput = z.infer<typeof listRepositoriesSchema>;
@@ -36,7 +40,7 @@ export async function listRepositoriesTool(input: ListRepositoriesInput) {
       language: repo.Lenguaje,
       stars: repo.StargazersCount,
       defaultBranch: repo.DefaultBranch,
-      fork: repo.Fork,
+      fork: repo.Fork,  // ------------> me indica si se han hecho copias en algun momento del repositorio, es decir, si es un fork o no, o si es un repositorio original
       createdAt: repo.CreatedAt,
       updatedAt: repo.UpdatedAt,
     })),

@@ -4,8 +4,8 @@ import { octokit } from "../GitHub/Clients.js";
 export const createIssueSchema = z.object({
 owner: z
     .string()
-    .min(1, "El owner no puede estar vacío")
-    .max(39, "El owner no puede superar 39 caracteres"),
+    .min(1, "El campo no puede estar vacío")
+    .max(39, "El campo no puede superar 39 caracteres"),
 repo: z
     .string()
     .min(3, "El nombre del repositorio debe tener al menos 3 caracteres")

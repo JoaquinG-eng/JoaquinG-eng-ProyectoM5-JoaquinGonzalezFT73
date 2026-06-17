@@ -4,8 +4,8 @@ import { GitHubIssues } from "../GitHub/Operations.js";
 export const listIssuesSchema = z.object({
   owner: z
     .string()
-    .min(1, "El owner no puede estar vacío")
-    .max(40, "El owner no puede superar 40 caracteres"),
+    .min(1, "El campo no puede estar vacío")
+    .max(40, "El campo no puede superar 40 caracteres"),
   repo: z
     .string()
     .min(3, "El nombre del repositorio debe tener al menos 3 caracteres")

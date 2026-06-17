@@ -8,7 +8,7 @@ import { createIssueTool, createIssueSchema } from "./tools/createIssue.js";
 import { createCommitTool, createCommitSchema } from "./tools/createCommit.js";
 
 const server = new McpServer({
-  name: "github-ai-agent",
+  name: "Proyecto M5 - GitHub MCP Server",
   version: "1.0.0",
 });
 
@@ -75,7 +75,7 @@ server.tool(
 async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.error("✅ GitHub MCP Server corriendo via stdio");
+  console.error("✅ servidor corriendo...");
 }
 
 main();
