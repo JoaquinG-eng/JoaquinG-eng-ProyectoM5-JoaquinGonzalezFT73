@@ -1,49 +1,38 @@
 import { z } from "zod";
+import { createIssueSchema, CreateIssueInput } from "../schemas/Schemas.js";
 import { octokit } from "../GitHub/Clients.js";
+import { logger } from "../utils/logging.js";
+import { handleGitHubError } from "../GitHub/Operations.js";
 
-export const createIssueSchema = z.object({
-owner: z
-    .string()
-    .min(1, "El campo no puede estar vacío")
-    .max(39, "El campo no puede superar 39 caracteres"),
-repo: z
-    .string()
-    .min(3, "El nombre del repositorio debe tener al menos 3 caracteres")
-    .max(100, "El nombre del repositorio no puede superar 100 caracteres")
-    .regex(/^[a-zA-Z0-9_.-]+$/, "Nombre de repositorio inválido"),
-title: z
-    .string()
-    .min(1, "El título no puede estar vacío")
-    .max(256, "El título no puede superar 256 caracteres"),
-body: z
-    .string()
-    .max(65536, "El cuerpo no puede superar 65536 caracteres")
-    .optional()
-    .default(""),
-});
-
-export type CreateIssueInput = z.infer<typeof createIssueSchema>;
+export { createIssueSchema };
 
 export async function createIssueTool(input: CreateIssueInput) {
-const parsed = createIssueSchema.safeParse(input);
+  const parsed = createIssueSchema.safeParse(input);
 
-if (!parsed.success) {
+  if (!parsed.success) {
     return {
-        error: true,
-        message: parsed.error.issues.map((e: z.ZodIssue) => e.message).join(", "),
+      error: true,
+      message: parsed.error.issues.map((e: z.ZodIssue) => e.message).join(", "),
     };
-}
+  }
 
-const response = await octokit.issues.create({
-    owner: parsed.data.owner,
-    repo: parsed.data.repo,
-    title: parsed.data.title,
-    body: parsed.data.body,
-});
+  const { owner, repo, title, body } = parsed.data;
 
-return {
-    error: false,
-    issue: {
+  try {
+    logger.info("Creando issue", { owner, repo, title });
+
+    const response = await octokit.issues.create({
+      owner,
+      repo,
+      title,
+      body,
+    });
+
+    logger.debug("Issue creado exitosamente", { owner, repo, number: response.data.number });
+
+    return {
+      error: false,
+      issue: {
         id: response.data.id,
         number: response.data.number,
         title: response.data.title,
@@ -51,6 +40,10 @@ return {
         state: response.data.state,
         url: response.data.html_url,
         createdAt: response.data.created_at,
-},
-};
+      },
+    };
+  } catch (error) {
+    logger.error("Error al crear issue", { owner, repo, title, error });
+    throw handleGitHubError(error, `${owner}/${repo}`);
+  }
 }

@@ -1,41 +1,10 @@
 import { z } from "zod";
+import { createPullRequestSchema, CreatePullRequestInput } from "../schemas/Schemas.js";
 import { octokit } from "../GitHub/Clients.js";
 import { logger } from "../utils/logging.js";
 import { handleGitHubError } from "../GitHub/Operations.js";
 
-export const createPullRequestSchema = z.object({
-  owner: z
-    .string()
-    .min(1, "El owner no puede estar vacío")
-    .max(39, "El owner no puede superar 39 caracteres"),
-  repo: z
-    .string()
-    .min(3, "El nombre del repositorio debe tener al menos 3 caracteres")
-    .max(100, "El nombre del repositorio no puede superar 100 caracteres")
-    .regex(/^[a-zA-Z0-9_.-]+$/, "Nombre de repositorio inválido"),
-  title: z
-    .string()
-    .min(1, "El título no puede estar vacío")
-    .max(256, "El título no puede superar 256 caracteres"),
-  body: z
-    .string()
-    .max(65536, "El cuerpo no puede superar 65536 caracteres")
-    .optional()
-    .default(""),
-  head: z
-    .string()
-    .min(1, "La branch origen no puede estar vacía"),
-  base: z
-    .string()
-    .optional()
-    .default("main"),
-  draft: z
-    .boolean()
-    .optional()
-    .default(false),
-});
-
-export type CreatePullRequestInput = z.infer<typeof createPullRequestSchema>;
+export { createPullRequestSchema };
 
 export async function createPullRequestTool(input: CreatePullRequestInput) {
   const parsed = createPullRequestSchema.safeParse(input);

@@ -1,30 +1,10 @@
 import { z } from "zod";
+import { createBranchSchema, CreateBranchInput } from "../schemas/Schemas.js";
 import { octokit } from "../GitHub/Clients.js";
 import { logger } from "../utils/logging.js";
 import { handleGitHubError } from "../GitHub/Operations.js";
 
-export const createBranchSchema = z.object({
-  owner: z
-    .string()
-    .min(1, "El owner no puede estar vacío")
-    .max(39, "El owner no puede superar 39 caracteres"),
-  repo: z
-    .string()
-    .min(3, "El nombre del repositorio debe tener al menos 3 caracteres")
-    .max(100, "El nombre del repositorio no puede superar 100 caracteres")
-    .regex(/^[a-zA-Z0-9_.-]+$/, "Nombre de repositorio inválido"),
-  branchName: z
-    .string()
-    .min(1, "El nombre de la branch no puede estar vacío")
-    .max(255, "El nombre de la branch no puede superar 255 caracteres")
-    .regex(/^[a-zA-Z0-9._/-]+$/, "Nombre de branch inválido"),
-  fromBranch: z
-    .string()
-    .optional()
-    .default("main"),
-});
-
-export type CreateBranchInput = z.infer<typeof createBranchSchema>;
+export { createBranchSchema };
 
 export async function createBranchTool(input: CreateBranchInput) {
   const parsed = createBranchSchema.safeParse(input);
@@ -41,7 +21,6 @@ export async function createBranchTool(input: CreateBranchInput) {
   try {
     logger.info("Creando branch", { owner, repo, branchName, fromBranch });
 
-    // Obtener el SHA de la branch origen
     const baseBranch = await octokit.repos.getBranch({ owner, repo, branch: fromBranch });
     const sha = baseBranch.data.commit.sha;
 

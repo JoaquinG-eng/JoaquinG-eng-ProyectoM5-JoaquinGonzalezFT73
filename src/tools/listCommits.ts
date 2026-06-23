@@ -1,19 +1,10 @@
 import { z } from "zod";
+import { listCommitsSchema, ListCommitsInput } from "../schemas/Schemas.js";
 import { GitHubCommitDetallado } from "../GitHub/Operations.js";
+import { logger } from "../utils/logging.js";
+import { handleGitHubError } from "../GitHub/Operations.js";
 
-export const listCommitsSchema = z.object({
-  owner: z
-    .string()
-    .min(1, "El campo no puede estar vacío")
-    .max(39, "El campo no puede superar 39 caracteres"),
-  repo: z
-    .string()
-    .min(3, "El nombre del repositorio debe tener al menos 3 caracteres")
-    .max(100, "El nombre del repositorio no puede superar 100 caracteres")
-    .regex(/^[a-zA-Z0-9_.-]+$/, "Nombre de repositorio inválido"),
-});
-
-export type ListCommitsInput = z.infer<typeof listCommitsSchema>;
+export { listCommitsSchema };
 
 export async function listCommitsTool(input: ListCommitsInput) {
   const parsed = listCommitsSchema.safeParse(input);
@@ -25,17 +16,26 @@ export async function listCommitsTool(input: ListCommitsInput) {
     };
   }
 
-  const commits = await GitHubCommitDetallado(parsed.data.owner, parsed.data.repo);
+  const { owner, repo } = parsed.data;
 
-  return {
-    error: false,
-    count: commits.length,
-    commits: commits.map((commit) => ({
-      sha: commit.sha,
-      message: commit.message,
-      author: commit.athor.name,
-      date: commit.athor.date,
-      url: commit.url,
-    })),
-  };
+  try {
+    logger.info("Listando commits", { owner, repo });
+    const commits = await GitHubCommitDetallado(owner, repo);
+    logger.debug("Commits listados", { owner, repo, count: commits.length });
+
+    return {
+      error: false,
+      count: commits.length,
+      commits: commits.map((commit) => ({
+        sha: commit.sha,
+        message: commit.message,
+        author: commit.athor.name,
+        date: commit.athor.date,
+        url: commit.url,
+      })),
+    };
+  } catch (error) {
+    logger.error("Error al listar commits", { owner, repo, error });
+    throw handleGitHubError(error, `${owner}/${repo}`);
+  }
 }

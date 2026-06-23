@@ -15,7 +15,7 @@ const server = new McpServer({
   version: "1.0.0",
 });
 
-server.tool(
+server.tool(  // -------------> funcion que dentro de poco deja de funcionar 
   "list_repositories",
   "Lista todos los repositorios públicos de un usuario de GitHub",
   listRepositoriesSchema.shape,
@@ -25,7 +25,7 @@ server.tool(
   }
 );
 
-server.tool(
+server.tool( 
   "list_issues",
   "Lista los issues de un repositorio de GitHub",
   listIssuesSchema.shape,

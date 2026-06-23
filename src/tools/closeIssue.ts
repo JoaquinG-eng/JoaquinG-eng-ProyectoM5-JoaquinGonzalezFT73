@@ -1,25 +1,10 @@
 import { z } from "zod";
+import { closeIssueSchema, CloseIssueInput } from "../schemas/Schemas.js";
 import { octokit } from "../GitHub/Clients.js";
 import { logger } from "../utils/logging.js";
 import { handleGitHubError } from "../GitHub/Operations.js";
 
-export const closeIssueSchema = z.object({
-  owner: z
-    .string()
-    .min(1, "El owner no puede estar vacío")
-    .max(39, "El owner no puede superar 39 caracteres"),
-  repo: z
-    .string()
-    .min(3, "El nombre del repositorio debe tener al menos 3 caracteres")
-    .max(100, "El nombre del repositorio no puede superar 100 caracteres")
-    .regex(/^[a-zA-Z0-9_.-]+$/, "Nombre de repositorio inválido"),
-  issue_number: z
-    .number()
-    .int("El número de issue debe ser un entero")
-    .positive("El número de issue debe ser positivo"),
-});
-
-export type CloseIssueInput = z.infer<typeof closeIssueSchema>;
+export { closeIssueSchema };
 
 export async function closeIssueTool(input: CloseIssueInput) {
   const parsed = closeIssueSchema.safeParse(input);

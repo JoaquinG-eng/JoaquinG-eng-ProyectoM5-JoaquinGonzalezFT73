@@ -1,19 +1,10 @@
 import { z } from "zod";
+import { listIssuesSchema, ListIssuesInput } from "../schemas/Schemas.js";
 import { GitHubIssues } from "../GitHub/Operations.js";
+import { logger } from "../utils/logging.js";
+import { handleGitHubError } from "../GitHub/Operations.js";
 
-export const listIssuesSchema = z.object({
-  owner: z
-    .string()
-    .min(1, "El campo no puede estar vacío")
-    .max(40, "El campo no puede superar 40 caracteres"),
-  repo: z
-    .string()
-    .min(3, "El nombre del repositorio debe tener al menos 3 caracteres")
-    .max(100, "El nombre del repositorio no puede superar 100 caracteres")
-    .regex(/^[a-zA-Z0-9_.-]+$/, "Nombre de repositorio inválido"),
-});
-
-export type ListIssuesInput = z.infer<typeof listIssuesSchema>;
+export { listIssuesSchema };
 
 export async function listIssuesTool(input: ListIssuesInput) {
   const parsed = listIssuesSchema.safeParse(input);
@@ -25,19 +16,28 @@ export async function listIssuesTool(input: ListIssuesInput) {
     };
   }
 
-  const issues = await GitHubIssues(parsed.data.owner, parsed.data.repo);
+  const { owner, repo } = parsed.data;
 
-  return {
-    error: false,
-    count: issues.length,
-    issues: issues.map((issue) => ({
-      id: issue.Id,
-      title: issue.Title,
-      estado: issue.Estado,
-      usuario: issue.Usuario,
-      url: issue.Url,
-      createdAt: issue.CreatedAt,
-      updatedAt: issue.UpdatedAt,
-    })),
-  };
+  try {
+    logger.info("Listando issues", { owner, repo });
+    const issues = await GitHubIssues(owner, repo);
+    logger.debug("Issues listados", { owner, repo, count: issues.length });
+
+    return {
+      error: false,
+      count: issues.length,
+      issues: issues.map((issue) => ({
+        id: issue.Id,
+        title: issue.Title,
+        estado: issue.Estado,
+        usuario: issue.Usuario,
+        url: issue.Url,
+        createdAt: issue.CreatedAt,
+        updatedAt: issue.UpdatedAt,
+      })),
+    };
+  } catch (error) {
+    logger.error("Error al listar issues", { owner, repo, error });
+    throw handleGitHubError(error, `${owner}/${repo}`);
+  }
 }

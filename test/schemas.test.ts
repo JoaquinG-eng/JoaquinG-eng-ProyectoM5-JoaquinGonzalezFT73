@@ -1,13 +1,15 @@
 import { describe, it, expect } from "vitest";
-import { listRepositoriesSchema } from "../src/tools/listRepositories.js";
-import { listIssuesSchema } from "../src/tools/listissues.js";
-import { listCommitsSchema } from "../src/tools/listCommits.js";
-import { createRepositorySchema } from "../src/tools/createRepository.js";
-import { createIssueSchema } from "../src/tools/createIssue.js";
-import { createCommitSchema } from "../src/tools/createCommit.js";
-import { closeIssueSchema } from "../src/tools/closeIssue.js";
-import { createBranchSchema } from "../src/tools/createBranch.js";
-import { createPullRequestSchema } from "../src/tools/createPullRequest.js";
+import {
+  listRepositoriesSchema,
+  listIssuesSchema,
+  listCommitsSchema,
+  createRepositorySchema,
+  createIssueSchema,
+  createCommitSchema,
+  closeIssueSchema,
+  createBranchSchema,
+  createPullRequestSchema,
+} from "../src/schemas/Schemas.js";
 
 describe("listRepositoriesSchema", () => {
   it("acepta un username válido", () => {
@@ -51,8 +53,8 @@ describe("createRepositorySchema", () => {
     expect(result.success).toBe(true);
   });
 
-  it("rechaza nombre con un solo carácter", () => {
-    const result = createRepositorySchema.safeParse({ name: "x", description: "", isPrivate: false });
+  it("rechaza nombre con menos de 3 caracteres", () => {
+    const result = createRepositorySchema.safeParse({ name: "ab", description: "", isPrivate: false });
     expect(result.success).toBe(false);
   });
 

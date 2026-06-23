@@ -332,108 +332,60 @@ Abrí `http://localhost:6274` en el navegador para probar cada tool de forma int
 
 ## 🗂️ Estructura del proyecto
 
-ProyectoM5-JoaquinGonzalezFT73/
+ ProyectoM5-JoaquinGonzalezFT73/
 
-│
-
-├── src/                          # Código fuente principal
-
-│   ├── GitHub/                   # Capa de integración con GitHub API
-
-│   │   ├── Clients.ts            # Configuración e inicialización de Octokit con autenticación
-
-│   │   └── Operations.ts         # Funciones que llaman a la API de GitHub (commits, issues, repos, PRs)
-
-│   │
-
-│   ├── tools/                    # Tools expuestas al LLM via MCP
-
-│   │   ├── listRepositories.ts   # Tool: listar repositorios de un usuario
-
-│   │   ├── listissues.ts         # Tool: listar issues de un repositorio
-
-│   │   ├── listCommits.ts        # Tool: listar commits de un repositorio
-
-│   │   ├── createRepository.ts   # Tool: crear un nuevo repositorio
-
-│   │   ├── createIssue.ts        # Tool: abrir un nuevo issue
-
-│   │   ├── createCommit.ts       # Tool: crear o modificar un archivo con commit
-
-│   │   ├── closeIssue.ts         # Tool: cerrar un issue existente
-
-│   │   ├── createBranch.ts       # Tool: crear una nueva branch
-
-│   │   └── createPullRequest.ts  # Tool: crear un pull request entre branches
-
-│   │
-
-│   ├── scripts/                  # Smoke tests para verificar integración real con GitHub API
-
-│   │   ├── smokeRepositorio.ts   # Prueba obtenerRepositoriosUsuario()
-
-│   │   ├── smokeUsuario.ts       # Prueba obtenerInformacionUsuario()
-
-│   │   ├── smokeCommit.ts        # Prueba GitHubCommitDetallado()
-
-│   │   ├── smokeIssues.ts        # Prueba GitHubIssues()
-
-│   │   ├── smokePullRequests.ts  # Prueba GitHubPullRequests()
-
-│   │   ├── smokeError.ts         # Prueba handleGitHubError()
-
+ ├── src/                          # Código fuente principal
+ │   ├── GitHub/                   # Capa de integración con GitHub API
+ │   │   ├── Clients.ts            # Configuración e inicialización de Octokit con autenticación
+ │   │   └── Operations.ts         # Funciones que llaman a la API de GitHub (commits, issues, repos, PRs)
+ │   │
+ │   ├── schemas/                  # Schemas de validación centralizados
+ │   │   └── Schemas.ts            # Todos los schemas Zod y tipos TypeScript de cada tool
+ │   │
+ │   ├── tools/                    # Tools expuestas al LLM via MCP
+ │   │   ├── listRepositories.ts   # Tool: listar repositorios de un usuario
+ │   │   ├── listissues.ts         # Tool: listar issues de un repositorio
+ │   │   ├── listCommits.ts        # Tool: listar commits de un repositorio
+ │   │   ├── createRepository.ts   # Tool: crear un nuevo repositorio
+ │   │   ├── createIssue.ts        # Tool: abrir un nuevo issue
+ │    │   ├── createCommit.ts       # Tool: crear o modificar un archivo con commit
+ │   │   ├── closeIssue.ts         # Tool: cerrar un issue existente
+ │   │   ├── createBranch.ts       # Tool: crear una nueva branch
+ │   │   └── createPullRequest.ts  # Tool: crear un pull request entre branches
+ │   │
+ │   ├── scripts/                  # Smoke tests para verificar integración real con GitHub API
+ │   │   ├── smokeRepositorio.ts   # Prueba obtenerRepositoriosUsuario()
+ │   │   ├── smokeUsuario.ts       # Prueba obtenerInformacionUsuario()
+ │   │   ├── smokeCommit.ts        # Prueba GitHubCommitDetallado()
+ │   │   ├── smokeIssues.ts        # Prueba GitHubIssues()
+ │   │   ├── smokePullRequests.ts  # Prueba GitHubPullRequests()
+ │   │   ├── smokeError.ts         # Prueba handleGitHubError()
 │   │   ├── smokeListRepositories.ts  # Prueba listRepositoriesTool()
-
 │   │   ├── smokeListIssues.ts    # Prueba listIssuesTool()
-
 │   │   ├── smokeListCommits.ts   # Prueba listCommitsTool()
-
 │   │   ├── smokeCreateRepository.ts  # Prueba createRepositoryTool()
-
 │   │   ├── smokeCreateIssue.ts   # Prueba createIssueTool()
-
 │   │   ├── smokeCreateCommit.ts  # Prueba createCommitTool()
-
 │   │   ├── smokeCloseIssue.ts    # Prueba closeIssueTool()
-
 │   │   ├── smokeCreateBranch.ts  # Prueba createBranchTool()
-
 │   │   └── smokeCreatePullRequest.ts  # Prueba createPullRequestTool()
-
 │   │
-
 │   ├── utils/                    # Utilidades compartidas
-
 │   │   ├── logging.ts            # Logger estructurado con niveles (debug/info/warn/error) y timestamps
-
 │   │   └── retry.ts              # Exponential backoff para reintentos en rate limiting y errores 5xx
-
 │   │
-
 │   ├── types.ts                  # Interfaces TypeScript compartidas (GitHubRepositorio, GitHubIssues, etc.)
-
 │   └── server.ts                 # Entry point del MCP Server — registra todas las tools y levanta el server via stdio
-
 │
-
 ├── test/                         # Tests unitarios
-
 │   └── schemas.test.ts           # 19 tests de validación de schemas con Vitest
-
 │
-
 ├── .env                          # Variables de entorno locales (no commitear)
-
 ├── .env.example                  # Ejemplo de variables de entorno sin valores reales
-
 ├── .gitignore                    # Archivos ignorados por Git (node_modules, .env, dist)
-
 ├── tsconfig.json                 # Configuración de TypeScript para Node.js con ESModules
-
 ├── package.json                  # Dependencias, scripts y metadata del proyecto
-
 └── README.md                     # Documentación completa del proyecto
-
 ---
 
 ### El servidor no arranca

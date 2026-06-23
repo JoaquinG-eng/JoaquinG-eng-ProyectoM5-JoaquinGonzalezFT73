@@ -1,24 +1,10 @@
 import { z } from "zod";
+import { createRepositorySchema, CreateRepositoryInput } from "../schemas/Schemas.js";
 import { octokit } from "../GitHub/Clients.js";
+import { logger } from "../utils/logging.js";
+import { handleGitHubError } from "../GitHub/Operations.js";
 
-export const createRepositorySchema = z.object({
-  name: z
-    .string()
-    .min(2, "El nombre debe tener al menos 1 caracteres")
-    .max(100, "El nombre no puede superar 100 caracteres")
-    .regex(/^[a-zA-Z0-9_.-]+$/, "El nombre solo puede contener letras, números, guiones, puntos y guiones bajos"),
-  description: z
-    .string()
-    .max(350, "La descripción no puede superar 350 caracteres")
-    .optional()
-    .default(""),
-  isPrivate: z
-    .boolean()
-    .optional()
-    .default(false),
-});
-
-export type CreateRepositoryInput = z.infer<typeof createRepositorySchema>;
+export { createRepositorySchema };
 
 export async function createRepositoryTool(input: CreateRepositoryInput) {
   const parsed = createRepositorySchema.safeParse(input);
@@ -30,23 +16,34 @@ export async function createRepositoryTool(input: CreateRepositoryInput) {
     };
   }
 
-  const response = await octokit.repos.createForAuthenticatedUser({
-    name: parsed.data.name,
-    description: parsed.data.description,
-    private: parsed.data.isPrivate,
-    auto_init: true,
-  });
+  const { name, description, isPrivate } = parsed.data;
 
-  return {
-    error: false,
-    repository: {
-      id: response.data.id,
-      name: response.data.name,
-      fullName: response.data.full_name,
-      url: response.data.html_url,
-      private: response.data.private,
-      description: response.data.description ?? "",
-      createdAt: response.data.created_at,
-    },
-  };
+  try {
+    logger.info("Creando repositorio", { name, isPrivate });
+
+    const response = await octokit.repos.createForAuthenticatedUser({
+      name,
+      description,
+      private: isPrivate,
+      auto_init: true,
+    });
+
+    logger.debug("Repositorio creado exitosamente", { name });
+
+    return {
+      error: false,
+      repository: {
+        id: response.data.id,
+        name: response.data.name,
+        fullName: response.data.full_name,
+        url: response.data.html_url,
+        private: response.data.private,
+        description: response.data.description ?? "",
+        createdAt: response.data.created_at,
+      },
+    };
+  } catch (error) {
+    logger.error("Error al crear repositorio", { name, error });
+    throw handleGitHubError(error, name);
+  }
 }
